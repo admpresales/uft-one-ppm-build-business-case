@@ -3,6 +3,8 @@
 '			to calculate the current year and add 1 so that we don't have to update the script
 '			when the new year happens, it will always be current year + 1
 '20200929 - DJ: Added .sync statements after .click statements and cleaned up some commented code
+'20200929 - DJ: Redesigned the AI steps as sometimes the PPM application freezes the browser at the same time that
+'				the AI is trying to click
 '===========================================================
 
 
@@ -99,15 +101,34 @@ AppContext.Sync																				'Wait for the browser to stop spinning
 '===========================================================================================
 'BP:  Click the Approved button
 '===========================================================================================
-AIUtil.FindText("Approved").Click
-AppContext.Sync																				'Wait for the browser to stop spinning
+Counter = 0
+Do
+	AIUtil.FindText("Approved").Click
+	AppContext.Sync																				'Wait for the browser to stop spinning
+	Counter = Counter + 1
+	wait(1)
+	If Counter >=90 Then
+		msgbox("Something is broken, the project health override window hasn't opened.")
+		Reporter.ReportEvent micFail, "Click the Approved button", "The Continue WorkflowAction didn't display within " & Counter & " seconds."
+		Exit Do
+	End If
+Loop Until AIUtil.FindText("Continue WorkflowAction").Exist(5)
 
 '===========================================================================================
 'BP:  Click the Continue Workflow Action button
 '===========================================================================================
-AIUtil.FindText("Continue WorkflowAction").Click
-AppContext.Sync																				'Wait for the browser to stop spinning
-AIUtil("text_box", "*Region:").Exist
+Counter = 0
+Do
+	AIUtil.FindText("Continue WorkflowAction").Click
+	AppContext.Sync																				'Wait for the browser to stop spinning
+	Counter = Counter + 1
+	wait(1)
+	If Counter >=90 Then
+		msgbox("Something is broken, the project health override window hasn't opened.")
+		Reporter.ReportEvent micFail, "Click the Continue WorkflowAction button", "The *Region didn't display within " & Counter & " seconds."
+		Exit Do
+	End If
+Loop Until AIUtil("text_box", "*Region:").Exist(5)
 
 '===========================================================================================
 'BP:  Enter "US" into the Region field
@@ -117,9 +138,19 @@ AIUtil("text_box", "*Region:").Type "US"
 '===========================================================================================
 'BP:  Click the Completed button
 '===========================================================================================
-AIUtil("button", "Completed").Click
-AppContext.Sync																				'Wait for the browser to stop spinning
-AIUtil.FindTextBlock("Project Class").Exist
+Counter = 0
+Do
+	AIUtil("button", "Completed").Click
+	AppContext.Sync																				'Wait for the browser to stop spinning
+	Counter = Counter + 1
+	wait(1)
+	If Counter >=90 Then
+		msgbox("Something is broken, the project health override window hasn't opened.")
+		Reporter.ReportEvent micFail, "Click the Completed button", "The Project Class combobox didn't display within " & Counter & " seconds."
+		Exit Do
+	End If
+Loop Until AIUtil.FindTextBlock("Project Class").Exist(5)
+
 
 '===========================================================================================
 'BP:  Select "Innovation" in the Project Class
@@ -134,14 +165,35 @@ AIUtil("combobox", ":Asset Class").Select "Infrastructure"
 '===========================================================================================
 'BP:  Click the Continue Workflow Action button
 '===========================================================================================
-AIUtil.FindText("Continue WorkflowAction").Click
-AppContext.Sync																				'Wait for the browser to stop spinning
+Counter = 0
+Do
+	AIUtil.FindText("Continue WorkflowAction").Click
+	AppContext.Sync																				'Wait for the browser to stop spinning
+	Counter = Counter + 1
+	wait(1)
+	If Counter >=90 Then
+		msgbox("Something is broken, the project health override window hasn't opened.")
+		Reporter.ReportEvent micFail, "Click the Continue WorkflowAction button", "The Approved button didn't display within " & Counter & " seconds."
+		Exit Do
+	End If
+Loop Until AIUtil.FindText("Approved", micFromLeft, 1).Exist(5)
+
 
 '===========================================================================================
 'BP:  Click the Approved button
 '===========================================================================================
-AIUtil.FindText("Approved", micFromLeft, 1).Click
-AppContext.Sync																				'Wait for the browser to stop spinning
+Counter = 0
+Do
+	AIUtil.FindText("Approved", micFromLeft, 1).Click
+	AppContext.Sync																				'Wait for the browser to stop spinning
+	Counter = Counter + 1
+	wait(1)
+	If Counter >=90 Then
+		msgbox("Something is broken, the project health override window hasn't opened.")
+		Reporter.ReportEvent micFail, "Click the Approved button", "The Expected Finish Period didn't display within " & Counter & " seconds."
+		Exit Do
+	End If
+Loop Until AIUtil("text_box", "Expected Finish Period").Exist(5)
 
 '===========================================================================================
 'BP:  Enter the Expected Start Period as June 2021
@@ -156,14 +208,34 @@ AIUtil("text_box", "Expected Finish Period").Type "December " & (Year(Now)+1)
 '===========================================================================================
 'BP:  Click the Continue Workflow Action button
 '===========================================================================================
-AIUtil.FindText("Continue WorkflowAction").Click
-AppContext.Sync																				'Wait for the browser to stop spinning
+Counter = 0
+Do
+	AIUtil.FindText("Continue WorkflowAction").Click
+	AppContext.Sync																				'Wait for the browser to stop spinning
+	Counter = Counter + 1
+	wait(1)
+	If Counter >=90 Then
+		msgbox("Something is broken, the project health override window hasn't opened.")
+		Reporter.ReportEvent micFail, "Click the Approved button", "The Completed button didn't display within " & Counter & " seconds."
+		Exit Do
+	End If
+Loop Until AIUtil("button", "Completed").Exist(5)
 
 '===========================================================================================
 'BP:  Click the Completed button
 '===========================================================================================
-AIUtil("button", "Completed").Click
-AppContext.Sync																				'Wait for the browser to stop spinning
+Counter = 0
+Do
+	AIUtil("button", "Completed").Click
+	AppContext.Sync																				'Wait for the browser to stop spinning
+	Counter = Counter + 1
+	wait(1)
+	If Counter >=90 Then
+		msgbox("Something is broken, the project health override window hasn't opened.")
+		Reporter.ReportEvent micFail, "Click the Approved button", "The Create button didn't display within " & Counter & " seconds."
+		Exit Do
+	End If
+Loop Until Browser("Search Requests").Page("Req #42957: More Information").WebElement("Create").Exist(5)
 
 '===========================================================================================
 'BP:  Click the Create button
@@ -174,7 +246,7 @@ AppContext2.Sync																				'Wait for the browser to stop spinning
 AIUtil.SetContext AppContext2																'Tell the AI engine to point at the application
 
 '===========================================================================================
-'BP:  Click the Create button in the opopup window
+'BP:  Click the Create button in the popup window
 '===========================================================================================
 Browser("Create a Blank Staffing").Page("Create a Blank Staffing").WebButton("button.create").Click
 AppContext2.Sync																				'Wait for the browser to stop spinning
@@ -182,15 +254,33 @@ AppContext2.Sync																				'Wait for the browser to stop spinning
 '===========================================================================================
 'BP:  Click the Select the Staffing Profile button
 '===========================================================================================
-AIUtil("button", "Select the Staffing Profile").Click
-AppContext2.Sync																				'Wait for the browser to stop spinning
+Do
+	AIUtil("button", "Select the Staffing Profile").Click
+	AppContext2.Sync																				'Wait for the browser to stop spinning
+	Counter = Counter + 1
+	wait(1)
+	If Counter >=90 Then
+		msgbox("Something is broken, the project health override window hasn't opened.")
+		Reporter.ReportEvent micFail, "Click the Select Staffing Profile button", "The Staffing Profile: didn't display within " & Counter & " seconds."
+		Exit Do
+	End If
+Loop Until AIUtil("text_box", "Staffing Profile:").Exist(5)
 
 '===========================================================================================
 'BP:  Enter "A/R Billing Upgrade" into the Staffing Profile field
 '===========================================================================================
 AIUtil("text_box", "Staffing Profile:").Type "A/R Billing Upgrade"
-AIUtil.FindText("Staffing Profile:", micFromBottom, 1).Click
-AppContext2.Sync																				'Wait for the browser to stop spinning
+Do
+	AIUtil.FindText("Staffing Profile:", micFromBottom, 1).Click
+	AppContext2.Sync																				'Wait for the browser to stop spinning
+	Counter = Counter + 1
+	wait(1)
+	If Counter >=90 Then
+		msgbox("Something is broken, the project health override window hasn't opened.")
+		Reporter.ReportEvent micFail, "Click the Select Staffing Profile: button", "The Import button didn't display within " & Counter & " seconds."
+		Exit Do
+	End If
+Loop Until Browser("Create a Blank Staffing").Page("Staffing Profile").Frame("copyPositionsDialogIF").Link("Import").Exist(5)
 
 '===========================================================================================
 'BP:  Click the Import button
@@ -209,10 +299,17 @@ AIUtil.SetContext AppContext																'Tell the AI engine to point at the 
 '===========================================================================================
 'BP:  Click the Continue Workflow Action button
 '===========================================================================================
-AIUtil.FindText("Continue WorkflowAction").Click
-AppContext.Sync																				'Wait for the browser to stop spinning
-AIUtil.FindTextBlock("Status: Finance Review").Exist
-AppContext.Sync																				'Wait for the browser to stop spinning
+Do
+	AIUtil.FindText("Continue WorkflowAction").Click
+	AppContext.Sync																				'Wait for the browser to stop spinning
+	Counter = Counter + 1
+	wait(1)
+	If Counter >=90 Then
+		msgbox("Something is broken, the project health override window hasn't opened.")
+		Reporter.ReportEvent micFail, "Click the Continue WorkflowAction button", "The Status: Finance Review didn't display within " & Counter & " seconds."
+		Exit Do
+	End If
+Loop Until AIUtil.FindTextBlock("Status: Finance Review").Exist(5)
 
 '===========================================================================================
 'BP:  Logout
