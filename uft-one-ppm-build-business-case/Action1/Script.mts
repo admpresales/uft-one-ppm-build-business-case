@@ -1,7 +1,8 @@
 ﻿'===========================================================
-'20200829 - DJ Modified the dates for expected start and finish date on the project proposal
+'20200929 - DJ Modified the dates for expected start and finish date on the project proposal
 '			to calculate the current year and add 1 so that we don't have to update the script
 '			when the new year happens, it will always be current year + 1
+'20200929 - DJ: Added .sync statements after .click statements and cleaned up some commented code
 '===========================================================
 
 
@@ -48,28 +49,34 @@ AIUtil.SetContext AppContext																'Tell the AI engine to point at the 
 'BP:  Click the Executive Overview link
 '===========================================================================================
 AIUtil.FindText("Strategic Portfolio").Click
+AppContext.Sync																				'Wait for the browser to stop spinning
 
 '===========================================================================================
 'BP:  Click the Barbara Getty (Business Relationship Manager) link to log in as Barabara Getty
 '===========================================================================================
 AIUtil.FindTextBlock("Barabara Getty").Click
+AppContext.Sync																				'Wait for the browser to stop spinning
 AIUtil.FindTextBlock("New Proposals").Exist
+AppContext.Sync																				'Wait for the browser to stop spinning
 
 '===========================================================================================
 'BP:  Click the Search menu item
 '===========================================================================================
 AIUtil.FindText("SEARCH", micFromTop, 1).Click
+AppContext.Sync																				'Wait for the browser to stop spinning
 
 '===========================================================================================
 'BP:  Click the Requests text
 '===========================================================================================
 AIUtil.FindTextBlock("Requests", micFromTop, 1).Click
+AppContext.Sync																				'Wait for the browser to stop spinning
 
 '===========================================================================================
 'BP:  Enter PFM - Proposal into the Request Type field
 '===========================================================================================
 AIUtil("text_box", "Request Type:").Type "PFM - Proposal"
 AIUtil("text_box", "Assigned To").Click
+AppContext.Sync																				'Wait for the browser to stop spinning
 
 '===========================================================================================
 'BP:  Enter a status of "New" into the Status field
@@ -80,22 +87,26 @@ AIUtil("text_box", "Status").Type "New"
 'BP:  Click the Search button (OCR not seeing text, use traditional OR)
 '===========================================================================================
 Browser("Search Requests").Page("Search Requests").Link("Search").Click
+AppContext.Sync																				'Wait for the browser to stop spinning
 
 '===========================================================================================
 'BP:  Click the first record returned in the search results
 '===========================================================================================
 DataTable.Value("dtFirstReqID") = Browser("Search Requests").Page("Request Search Results").WebTable("Req #").GetCellData(2,2)
 AIUtil.FindTextBlock(DataTable.Value("dtFirstReqID")).Click
+AppContext.Sync																				'Wait for the browser to stop spinning
 
 '===========================================================================================
 'BP:  Click the Approved button
 '===========================================================================================
 AIUtil.FindText("Approved").Click
+AppContext.Sync																				'Wait for the browser to stop spinning
 
 '===========================================================================================
 'BP:  Click the Continue Workflow Action button
 '===========================================================================================
 AIUtil.FindText("Continue WorkflowAction").Click
+AppContext.Sync																				'Wait for the browser to stop spinning
 AIUtil("text_box", "*Region:").Exist
 
 '===========================================================================================
@@ -107,6 +118,7 @@ AIUtil("text_box", "*Region:").Type "US"
 'BP:  Click the Completed button
 '===========================================================================================
 AIUtil("button", "Completed").Click
+AppContext.Sync																				'Wait for the browser to stop spinning
 AIUtil.FindTextBlock("Project Class").Exist
 
 '===========================================================================================
@@ -123,11 +135,13 @@ AIUtil("combobox", ":Asset Class").Select "Infrastructure"
 'BP:  Click the Continue Workflow Action button
 '===========================================================================================
 AIUtil.FindText("Continue WorkflowAction").Click
+AppContext.Sync																				'Wait for the browser to stop spinning
 
 '===========================================================================================
 'BP:  Click the Approved button
 '===========================================================================================
 AIUtil.FindText("Approved", micFromLeft, 1).Click
+AppContext.Sync																				'Wait for the browser to stop spinning
 
 '===========================================================================================
 'BP:  Enter the Expected Start Period as June 2021
@@ -143,11 +157,13 @@ AIUtil("text_box", "Expected Finish Period").Type "December " & (Year(Now)+1)
 'BP:  Click the Continue Workflow Action button
 '===========================================================================================
 AIUtil.FindText("Continue WorkflowAction").Click
+AppContext.Sync																				'Wait for the browser to stop spinning
 
 '===========================================================================================
 'BP:  Click the Completed button
 '===========================================================================================
 AIUtil("button", "Completed").Click
+AppContext.Sync																				'Wait for the browser to stop spinning
 
 '===========================================================================================
 'BP:  Click the Create button
@@ -161,30 +177,26 @@ AIUtil.SetContext AppContext2																'Tell the AI engine to point at the
 'BP:  Click the Create button in the opopup window
 '===========================================================================================
 Browser("Create a Blank Staffing").Page("Create a Blank Staffing").WebButton("button.create").Click
+AppContext2.Sync																				'Wait for the browser to stop spinning
 
 '===========================================================================================
 'BP:  Click the Select the Staffing Profile button
 '===========================================================================================
 AIUtil("button", "Select the Staffing Profile").Click
+AppContext2.Sync																				'Wait for the browser to stop spinning
 
 '===========================================================================================
 'BP:  Enter "A/R Billing Upgrade" into the Staffing Profile field
 '===========================================================================================
 AIUtil("text_box", "Staffing Profile:").Type "A/R Billing Upgrade"
 AIUtil.FindText("Staffing Profile:", micFromBottom, 1).Click
+AppContext2.Sync																				'Wait for the browser to stop spinning
 
 '===========================================================================================
 'BP:  Click the Import button
 '===========================================================================================
-'Counter = 0
-'Do
-'	Counter = Counter + 1
-'	wait(1)
-	Browser("Create a Blank Staffing").Page("Staffing Profile").Frame("copyPositionsDialogIF").Link("Import").Click
-'	If Counter >= 60 Then
-'		msgbox("Something is wrong")
-'	End If
-'Loop While AIUtil("text_box", "Staffing Profile:").Exist
+Browser("Create a Blank Staffing").Page("Staffing Profile").Frame("copyPositionsDialogIF").Link("Import").Click
+AppContext.Sync																				'Wait for the browser to stop spinning
 
 '===========================================================================================
 'BP:  Click the Done text
@@ -198,13 +210,17 @@ AIUtil.SetContext AppContext																'Tell the AI engine to point at the 
 'BP:  Click the Continue Workflow Action button
 '===========================================================================================
 AIUtil.FindText("Continue WorkflowAction").Click
+AppContext.Sync																				'Wait for the browser to stop spinning
 AIUtil.FindTextBlock("Status: Finance Review").Exist
+AppContext.Sync																				'Wait for the browser to stop spinning
 
 '===========================================================================================
 'BP:  Logout
 '===========================================================================================
 Browser("Search Requests").Page("Req #42953: Details").WebElement("menuUserIcon").Click
+AppContext.Sync																				'Wait for the browser to stop spinning
 AIUtil.FindTextBlock("Sign Out (Barbara Getty)").Click
+AppContext.Sync																				'Wait for the browser to stop spinning
 
 AppContext.Close																			'Close the application at the end of your script
 
