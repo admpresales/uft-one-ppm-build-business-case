@@ -1,4 +1,11 @@
 ﻿'===========================================================
+'20200829 - DJ Modified the dates for expected start and finish date on the project proposal
+'			to calculate the current year and add 1 so that we don't have to update the script
+'			when the new year happens, it will always be current year + 1
+'===========================================================
+
+
+'===========================================================
 'Function to Create a Random Number with DateTime Stamp
 '===========================================================
 Function fnRandomNumberWithDateTimeStamp()
@@ -125,12 +132,12 @@ AIUtil.FindText("Approved", micFromLeft, 1).Click
 '===========================================================================================
 'BP:  Enter the Expected Start Period as June 2021
 '===========================================================================================
-AIUtil("text_box", "Expected Stan Period").Type "June 2021"
+AIUtil("text_box", "Expected Stan Period").Type "June " & (Year(Now)+1)
 
 '===========================================================================================
 'BP:  Enter the Expected Finish Period as December 2021
 '===========================================================================================
-AIUtil("text_box", "Expected Finish Period").Type "December 2021"
+AIUtil("text_box", "Expected Finish Period").Type "December " & (Year(Now)+1)
 
 '===========================================================================================
 'BP:  Click the Continue Workflow Action button
