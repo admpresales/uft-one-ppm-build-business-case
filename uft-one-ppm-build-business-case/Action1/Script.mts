@@ -14,6 +14,8 @@
 '				not to be accepted by the UI when we do the AI type
 '20200930 - DJ: Added loop break for continue workflow action of last step, in case loop timing happened to get to retrying
 '				the continue action when PPM finally completed the last attempt
+'20200930 - DJ: Updated the click out of the Request Type to just click on the label for the status to ensure that PPM page 
+'				reload timing won't sporadically cause the AI to type in the wrong field.
 '===========================================================
 
 
@@ -86,7 +88,7 @@ AppContext.Sync																				'Wait for the browser to stop spinning
 'BP:  Enter PFM - Proposal into the Request Type field
 '===========================================================================================
 AIUtil("text_box", "Request Type:").Type "PFM - Proposal"
-AIUtil("text_box", "Assigned To").Click
+AIUtil.FindText("Status").Click
 AppContext.Sync																				'Wait for the browser to stop spinning
 
 '===========================================================================================
