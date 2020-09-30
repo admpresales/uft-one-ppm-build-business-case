@@ -5,6 +5,7 @@
 '20200929 - DJ: Added .sync statements after .click statements and cleaned up some commented code
 '20200929 - DJ: Redesigned the AI steps as sometimes the PPM application freezes the browser at the same time that
 '				the AI is trying to click
+'20200930 - DJ: Modified reporter event error text to be more accurate
 '===========================================================
 
 
@@ -109,7 +110,7 @@ Do
 	wait(1)
 	If Counter >=90 Then
 		msgbox("Something is broken, the project health override window hasn't opened.")
-		Reporter.ReportEvent micFail, "Click the Approved button", "The Continue WorkflowAction didn't display within " & Counter & " seconds."
+		Reporter.ReportEvent micFail, "Click the Approved button", "The Continue WorkflowAction didn't display within " & Counter & " attempts."
 		Exit Do
 	End If
 Loop Until AIUtil.FindText("Continue WorkflowAction").Exist(5)
@@ -125,7 +126,7 @@ Do
 	wait(1)
 	If Counter >=90 Then
 		msgbox("Something is broken, the project health override window hasn't opened.")
-		Reporter.ReportEvent micFail, "Click the Continue WorkflowAction button", "The *Region didn't display within " & Counter & " seconds."
+		Reporter.ReportEvent micFail, "Click the Continue WorkflowAction button", "The *Region didn't display within " & Counter & " attempts."
 		Exit Do
 	End If
 Loop Until AIUtil("text_box", "*Region:").Exist(5)
@@ -146,7 +147,7 @@ Do
 	wait(1)
 	If Counter >=90 Then
 		msgbox("Something is broken, the project health override window hasn't opened.")
-		Reporter.ReportEvent micFail, "Click the Completed button", "The Project Class combobox didn't display within " & Counter & " seconds."
+		Reporter.ReportEvent micFail, "Click the Completed button", "The Project Class combobox didn't display within " & Counter & " attempts."
 		Exit Do
 	End If
 Loop Until AIUtil.FindTextBlock("Project Class").Exist(5)
@@ -173,7 +174,7 @@ Do
 	wait(1)
 	If Counter >=90 Then
 		msgbox("Something is broken, the project health override window hasn't opened.")
-		Reporter.ReportEvent micFail, "Click the Continue WorkflowAction button", "The Approved button didn't display within " & Counter & " seconds."
+		Reporter.ReportEvent micFail, "Click the Continue WorkflowAction button", "The Approved button didn't display within " & Counter & " attempts."
 		Exit Do
 	End If
 Loop Until AIUtil.FindText("Approved", micFromLeft, 1).Exist(5)
@@ -190,7 +191,7 @@ Do
 	wait(1)
 	If Counter >=90 Then
 		msgbox("Something is broken, the project health override window hasn't opened.")
-		Reporter.ReportEvent micFail, "Click the Approved button", "The Expected Finish Period didn't display within " & Counter & " seconds."
+		Reporter.ReportEvent micFail, "Click the Approved button", "The Expected Finish Period didn't display within " & Counter & " attempts."
 		Exit Do
 	End If
 Loop Until AIUtil("text_box", "Expected Finish Period").Exist(5)
@@ -216,7 +217,7 @@ Do
 	wait(1)
 	If Counter >=90 Then
 		msgbox("Something is broken, the project health override window hasn't opened.")
-		Reporter.ReportEvent micFail, "Click the Approved button", "The Completed button didn't display within " & Counter & " seconds."
+		Reporter.ReportEvent micFail, "Click the Approved button", "The Completed button didn't display within " & Counter & " attempts."
 		Exit Do
 	End If
 Loop Until AIUtil("button", "Completed").Exist(5)
@@ -232,7 +233,7 @@ Do
 	wait(1)
 	If Counter >=90 Then
 		msgbox("Something is broken, the project health override window hasn't opened.")
-		Reporter.ReportEvent micFail, "Click the Approved button", "The Create button didn't display within " & Counter & " seconds."
+		Reporter.ReportEvent micFail, "Click the Approved button", "The Create button didn't display within " & Counter & " attempts."
 		Exit Do
 	End If
 Loop Until Browser("Search Requests").Page("Req #42957: More Information").WebElement("Create").Exist(5)
@@ -261,7 +262,7 @@ Do
 	wait(1)
 	If Counter >=90 Then
 		msgbox("Something is broken, the project health override window hasn't opened.")
-		Reporter.ReportEvent micFail, "Click the Select Staffing Profile button", "The Staffing Profile: didn't display within " & Counter & " seconds."
+		Reporter.ReportEvent micFail, "Click the Select Staffing Profile button", "The Staffing Profile: didn't display within " & Counter & " attempts."
 		Exit Do
 	End If
 Loop Until AIUtil("text_box", "Staffing Profile:").Exist(5)
@@ -277,7 +278,7 @@ Do
 	wait(1)
 	If Counter >=90 Then
 		msgbox("Something is broken, the project health override window hasn't opened.")
-		Reporter.ReportEvent micFail, "Click the Select Staffing Profile: button", "The Import button didn't display within " & Counter & " seconds."
+		Reporter.ReportEvent micFail, "Click the Select Staffing Profile: button", "The Import button didn't display within " & Counter & " attempts."
 		Exit Do
 	End If
 Loop Until Browser("Create a Blank Staffing").Page("Staffing Profile").Frame("copyPositionsDialogIF").Link("Import").Exist(5)
@@ -306,7 +307,7 @@ Do
 	wait(1)
 	If Counter >=90 Then
 		msgbox("Something is broken, the project health override window hasn't opened.")
-		Reporter.ReportEvent micFail, "Click the Continue WorkflowAction button", "The Status: Finance Review didn't display within " & Counter & " seconds."
+		Reporter.ReportEvent micFail, "Click the Continue WorkflowAction button", "The Status: Finance Review didn't display within " & Counter & " attempts."
 		Exit Do
 	End If
 Loop Until AIUtil.FindTextBlock("Status: Finance Review").Exist(5)
