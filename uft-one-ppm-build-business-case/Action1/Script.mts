@@ -312,6 +312,7 @@ AIUtil.SetContext AppContext																'Tell the AI engine to point at the 
 'BP:  Click the Continue Workflow Action button
 '===========================================================================================
 Do
+	AppContext.Sync																				'Wait for the browser to stop spinning
 	If AIUtil.FindTextBlock("Status: Finance Review").Exist(0) Then
 		Exit Do
 	End If
