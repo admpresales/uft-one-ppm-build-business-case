@@ -9,6 +9,7 @@
 '20200930 - DJ: When executing from Jenkins, one AI statement doesn't execute properly the first time, if you
 '				execute it a second time (in the loop) it executes fine.  While investigating, replace with a 
 '				traditional OR statement.
+'20200930 - DJ: Modified the loop condition to utilize the workflow status soas to be more reliable
 '===========================================================
 
 
@@ -116,7 +117,7 @@ Do
 		Reporter.ReportEvent micFail, "Click the Approved button", "The Continue WorkflowAction didn't display within " & Counter & " attempts."
 		Exit Do
 	End If
-Loop Until AIUtil.FindText("Continue WorkflowAction").Exist(5)
+Loop While AIUtil.FindTextBlock("Status: New").Exist(1)
 
 '===========================================================================================
 'BP:  Click the Continue Workflow Action button
@@ -135,7 +136,7 @@ Do
 		Reporter.ReportEvent micFail, "Click the Continue WorkflowAction button", "The *Region didn't display within " & Counter & " attempts."
 		Exit Do
 	End If
-Loop Until AIUtil("text_box", "*Region:").Exist(5)
+Loop Until AIUtil.FindTextBlock("Status: High-Level Business Case").Exist(5)
 
 '===========================================================================================
 'BP:  Enter "US" into the Region field
@@ -183,8 +184,7 @@ Do
 		Reporter.ReportEvent micFail, "Click the Continue WorkflowAction button", "The Approved button didn't display within " & Counter & " attempts."
 		Exit Do
 	End If
-Loop Until AIUtil.FindText("Approved", micFromLeft, 1).Exist(5)
-
+Loop Until AIUtil.FindTextBlock("Status: 1st Level Review").Exist(5)
 
 '===========================================================================================
 'BP:  Click the Approved button
@@ -226,7 +226,7 @@ Do
 		Reporter.ReportEvent micFail, "Click the Approved button", "The Completed button didn't display within " & Counter & " attempts."
 		Exit Do
 	End If
-Loop Until AIUtil("button", "Completed").Exist(5)
+Loop Until AIUtil.FindTextBlock("Status: Detailed Business Case").Exist(5)
 
 '===========================================================================================
 'BP:  Click the Completed button
