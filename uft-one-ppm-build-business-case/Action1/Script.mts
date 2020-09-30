@@ -12,6 +12,8 @@
 '20200930 - DJ: Modified the loop condition to utilize the workflow status soas to be more reliable
 '20200930 - DJ: Updated setting the Region value to be traditional OR, the validation process of PPM can cause the value
 '				not to be accepted by the UI when we do the AI type
+'20200930 - DJ: Added loop break for continue workflow action of last step, in case loop timing happened to get to retrying
+'				the continue action when PPM finally completed the last attempt
 '===========================================================
 
 
@@ -310,6 +312,9 @@ AIUtil.SetContext AppContext																'Tell the AI engine to point at the 
 'BP:  Click the Continue Workflow Action button
 '===========================================================================================
 Do
+	If AIUtil.FindTextBlock("Status: Finance Review").Exist(0) Then
+		Exit Do
+	End If
 	AIUtil.FindText("Continue WorkflowAction").Click
 	AppContext.Sync																				'Wait for the browser to stop spinning
 	Counter = Counter + 1
