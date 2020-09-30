@@ -6,6 +6,9 @@
 '20200929 - DJ: Redesigned the AI steps as sometimes the PPM application freezes the browser at the same time that
 '				the AI is trying to click
 '20200930 - DJ: Modified reporter event error text to be more accurate
+'20200930 - DJ: When executing from Jenkins, one AI statement doesn't execute properly the first time, if you
+'				execute it a second time (in the loop) it executes fine.  While investigating, replace with a 
+'				traditional OR statement.
 '===========================================================
 
 
@@ -120,7 +123,10 @@ Loop Until AIUtil.FindText("Continue WorkflowAction").Exist(5)
 '===========================================================================================
 Counter = 0
 Do
-	AIUtil.FindText("Continue WorkflowAction").Click
+	'When executing from Jenkins, the AI statement is failing the first time, 2nd time it runs, while 
+	'	investigating, replace with traditional OR step
+'	AIUtil.FindText("Continue WorkflowAction").Click
+	Browser("Search Requests").Page("Req More Information").WebElement("Continue Workflow Action").Click
 	AppContext.Sync																				'Wait for the browser to stop spinning
 	Counter = Counter + 1
 	wait(1)
@@ -236,12 +242,12 @@ Do
 		Reporter.ReportEvent micFail, "Click the Approved button", "The Create button didn't display within " & Counter & " attempts."
 		Exit Do
 	End If
-Loop Until Browser("Search Requests").Page("Req #42957: More Information").WebElement("Create").Exist(5)
+Loop Until Browser("Search Requests").Page("Req More Information").WebElement("Create").Exist(5)
 
 '===========================================================================================
 'BP:  Click the Create button
 '===========================================================================================
-Browser("Search Requests").Page("Req #42957: More Information").WebElement("Create").Click
+Browser("Search Requests").Page("Req More Information").WebElement("Create").Click
 AppContext2.Maximize																			'Maximize the application to give the best chance that the fields will be visible on the screen
 AppContext2.Sync																				'Wait for the browser to stop spinning
 AIUtil.SetContext AppContext2																'Tell the AI engine to point at the application
@@ -315,7 +321,7 @@ Loop Until AIUtil.FindTextBlock("Status: Finance Review").Exist(5)
 '===========================================================================================
 'BP:  Logout
 '===========================================================================================
-Browser("Search Requests").Page("Req #42953: Details").WebElement("menuUserIcon").Click
+Browser("Search Requests").Page("Req Details").WebElement("menuUserIcon").Click
 AppContext.Sync																				'Wait for the browser to stop spinning
 AIUtil.FindTextBlock("Sign Out (Barbara Getty)").Click
 AppContext.Sync																				'Wait for the browser to stop spinning
