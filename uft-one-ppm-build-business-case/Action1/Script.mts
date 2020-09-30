@@ -10,6 +10,8 @@
 '				execute it a second time (in the loop) it executes fine.  While investigating, replace with a 
 '				traditional OR statement.
 '20200930 - DJ: Modified the loop condition to utilize the workflow status soas to be more reliable
+'20200930 - DJ: Updated setting the Region value to be traditional OR, the validation process of PPM can cause the value
+'				not to be accepted by the UI when we do the AI type
 '===========================================================
 
 
@@ -141,7 +143,8 @@ Loop Until AIUtil.FindTextBlock("Status: High-Level Business Case").Exist(5)
 '===========================================================================================
 'BP:  Enter "US" into the Region field
 '===========================================================================================
-AIUtil("text_box", "*Region:").Type "US"
+'AIUtil("text_box", "*Region:").Type "US"
+Browser("Search Requests").Page("Req Details").WebEdit("Region").Set "US"
 
 '===========================================================================================
 'BP:  Click the Completed button
