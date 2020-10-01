@@ -16,6 +16,8 @@
 '				the continue action when PPM finally completed the last attempt
 '20200930 - DJ: Updated the click out of the Request Type to just click on the label for the status to ensure that PPM page 
 '				reload timing won't sporadically cause the AI to type in the wrong field.
+'20200930 - DJ: Made the ClickLoop function, replaced duplicative code throughout with references to ClickLoop, made the
+'				proposal search as a function, so as to allow easy sharing with other scripts.
 '===========================================================
 
 
@@ -36,6 +38,72 @@ Dim sSecond : sSecond = Second(Now)
 fnRandomNumberWithDateTimeStamp = Int(sDate & sMonth & sYear & sHour & sMinute & sSecond)
 
 '======================== End Function =====================
+End Function
+
+Function ClickLoop (AppContext, ClickStatement, SuccessStatement)
+	
+	Dim Counter
+	
+	Counter = 0
+	Do
+		ClickStatement.Click
+		AppContext.Sync																				'Wait for the browser to stop spinning
+		Counter = Counter + 1
+		wait(1)
+		If Counter >=90 Then
+			msgbox("Something is broken, the Requests hasn't shown up")
+			Reporter.ReportEvent micFail, "Click the Search text", "The Requests text didn't display within " & Counter & " attempts."
+			Exit Do
+		End If
+	Loop Until SuccessStatement.Exist(1)
+	AppContext.Sync																				'Wait for the browser to stop spinning
+
+End Function
+
+Function PPMProposalSearch (CurrentStatus, NextAction)
+	'===========================================================================================
+	'BP:  Click the Search menu item
+	'===========================================================================================
+	Set ClickStatement = AIUtil.FindText("SEARCH", micFromTop, 1)
+	Set SuccessStatement = AIUtil.FindTextBlock("Requests", micFromTop, 1)
+	ClickLoop AppContext, ClickStatement, SuccessStatement
+	AppContext.Sync																				'Wait for the browser to stop spinning
+	
+	'===========================================================================================
+	'BP:  Click the Requests text
+	'===========================================================================================
+	Set ClickStatement = AIUtil.FindTextBlock("Requests", micFromTop, 1)
+	Set SuccessStatement = AIUtil("text_box", "Request Type:")
+	ClickLoop AppContext, ClickStatement, SuccessStatement
+	AppContext.Sync																				'Wait for the browser to stop spinning
+	
+	'===========================================================================================
+	'BP:  Enter PFM - Proposal into the Request Type field
+	'===========================================================================================
+	AIUtil("text_box", "Request Type:").Type "PFM - Proposal"
+	AIUtil.FindText("Status").Click
+	AppContext.Sync																				'Wait for the browser to stop spinning
+	
+	'===========================================================================================
+	'BP:  Enter a status of "New" into the Status field
+	'===========================================================================================
+	AIUtil("text_box", "Status").Type CurrentStatus
+	
+	'===========================================================================================
+	'BP:  Click the Search button (OCR not seeing text, use traditional OR)
+	'===========================================================================================
+	Browser("Search Requests").Page("Search Requests").Link("Search").Click
+	AppContext.Sync																				'Wait for the browser to stop spinning
+	
+	'===========================================================================================
+	'BP:  Click the first record returned in the search results
+	'===========================================================================================
+	DataTable.Value("dtFirstReqID") = Browser("Search Requests").Page("Request Search Results").WebTable("Req #").GetCellData(2,2)
+	Set ClickStatement = AIUtil.FindTextBlock(DataTable.Value("dtFirstReqID"))
+	Set SuccessStatement = AIUtil.FindText(NextAction)
+	ClickLoop AppContext, ClickStatement, SuccessStatement
+	AppContext.Sync																				'Wait for the browser to stop spinning
+	
 End Function
 
 Dim BrowserExecutable, Counter
@@ -72,77 +140,24 @@ AppContext.Sync																				'Wait for the browser to stop spinning
 AIUtil.FindTextBlock("New Proposals").Exist
 AppContext.Sync																				'Wait for the browser to stop spinning
 
-'===========================================================================================
-'BP:  Click the Search menu item
-'===========================================================================================
-AIUtil.FindText("SEARCH", micFromTop, 1).Click
-AppContext.Sync																				'Wait for the browser to stop spinning
-
-'===========================================================================================
-'BP:  Click the Requests text
-'===========================================================================================
-AIUtil.FindTextBlock("Requests", micFromTop, 1).Click
-AppContext.Sync																				'Wait for the browser to stop spinning
-
-'===========================================================================================
-'BP:  Enter PFM - Proposal into the Request Type field
-'===========================================================================================
-AIUtil("text_box", "Request Type:").Type "PFM - Proposal"
-AIUtil.FindText("Status").Click
-AppContext.Sync																				'Wait for the browser to stop spinning
-
-'===========================================================================================
-'BP:  Enter a status of "New" into the Status field
-'===========================================================================================
-AIUtil("text_box", "Status").Type "New"
-
-'===========================================================================================
-'BP:  Click the Search button (OCR not seeing text, use traditional OR)
-'===========================================================================================
-Browser("Search Requests").Page("Search Requests").Link("Search").Click
-AppContext.Sync																				'Wait for the browser to stop spinning
-
-'===========================================================================================
-'BP:  Click the first record returned in the search results
-'===========================================================================================
-DataTable.Value("dtFirstReqID") = Browser("Search Requests").Page("Request Search Results").WebTable("Req #").GetCellData(2,2)
-AIUtil.FindTextBlock(DataTable.Value("dtFirstReqID")).Click
-AppContext.Sync																				'Wait for the browser to stop spinning
+PPMProposalSearch "New", "Approved"
 
 '===========================================================================================
 'BP:  Click the Approved button
 '===========================================================================================
-Counter = 0
-Do
-	AIUtil.FindText("Approved").Click
-	AppContext.Sync																				'Wait for the browser to stop spinning
-	Counter = Counter + 1
-	wait(1)
-	If Counter >=90 Then
-		msgbox("Something is broken, the project health override window hasn't opened.")
-		Reporter.ReportEvent micFail, "Click the Approved button", "The Continue WorkflowAction didn't display within " & Counter & " attempts."
-		Exit Do
-	End If
-Loop While AIUtil.FindTextBlock("Status: New").Exist(1)
+Set ClickStatement = AIUtil.FindText("Approved")
+Set SuccessStatement = Browser("Search Requests").Page("Req More Information").WebElement("Continue Workflow Action")
+ClickLoop AppContext, ClickStatement, SuccessStatement
 
 '===========================================================================================
 'BP:  Click the Continue Workflow Action button
 '===========================================================================================
-Counter = 0
-Do
-	'When executing from Jenkins, the AI statement is failing the first time, 2nd time it runs, while 
-	'	investigating, replace with traditional OR step
+'When executing from Jenkins, the AI statement is failing the first time, 2nd time it runs, while 
+'	investigating, replace with traditional OR step
 '	AIUtil.FindText("Continue WorkflowAction").Click
-	Browser("Search Requests").Page("Req More Information").WebElement("Continue Workflow Action").Click
-	AppContext.Sync																				'Wait for the browser to stop spinning
-	Counter = Counter + 1
-	wait(1)
-	If Counter >=90 Then
-		msgbox("Something is broken, the project health override window hasn't opened.")
-		Reporter.ReportEvent micFail, "Click the Continue WorkflowAction button", "The *Region didn't display within " & Counter & " attempts."
-		Exit Do
-	End If
-Loop Until AIUtil.FindTextBlock("Status: High-Level Business Case").Exist(5)
+Set ClickStatement = Browser("Search Requests").Page("Req More Information").WebElement("Continue Workflow Action")
+Set SuccessStatement = AIUtil.FindTextBlock("Status: High-Level Business Case")
+ClickLoop AppContext, ClickStatement, SuccessStatement
 
 '===========================================================================================
 'BP:  Enter "US" into the Region field
@@ -153,19 +168,9 @@ Browser("Search Requests").Page("Req Details").WebEdit("Region").Set "US"
 '===========================================================================================
 'BP:  Click the Completed button
 '===========================================================================================
-Counter = 0
-Do
-	AIUtil("button", "Completed").Click
-	AppContext.Sync																				'Wait for the browser to stop spinning
-	Counter = Counter + 1
-	wait(1)
-	If Counter >=90 Then
-		msgbox("Something is broken, the project health override window hasn't opened.")
-		Reporter.ReportEvent micFail, "Click the Completed button", "The Project Class combobox didn't display within " & Counter & " attempts."
-		Exit Do
-	End If
-Loop Until AIUtil.FindTextBlock("Project Class").Exist(5)
-
+Set ClickStatement = AIUtil("button", "Completed")
+Set SuccessStatement = AIUtil.FindTextBlock("Project Class")
+ClickLoop AppContext, ClickStatement, SuccessStatement
 
 '===========================================================================================
 'BP:  Select "Innovation" in the Project Class
@@ -180,34 +185,16 @@ AIUtil("combobox", ":Asset Class").Select "Infrastructure"
 '===========================================================================================
 'BP:  Click the Continue Workflow Action button
 '===========================================================================================
-Counter = 0
-Do
-	AIUtil.FindText("Continue WorkflowAction").Click
-	AppContext.Sync																				'Wait for the browser to stop spinning
-	Counter = Counter + 1
-	wait(1)
-	If Counter >=90 Then
-		msgbox("Something is broken, the project health override window hasn't opened.")
-		Reporter.ReportEvent micFail, "Click the Continue WorkflowAction button", "The Approved button didn't display within " & Counter & " attempts."
-		Exit Do
-	End If
-Loop Until AIUtil.FindTextBlock("Status: 1st Level Review").Exist(5)
+Set ClickStatement = AIUtil.FindText("Continue WorkflowAction")
+Set SuccessStatement = AIUtil.FindTextBlock("Status: 1st Level Review")
+ClickLoop AppContext, ClickStatement, SuccessStatement
 
 '===========================================================================================
 'BP:  Click the Approved button
 '===========================================================================================
-Counter = 0
-Do
-	AIUtil.FindText("Approved", micFromLeft, 1).Click
-	AppContext.Sync																				'Wait for the browser to stop spinning
-	Counter = Counter + 1
-	wait(1)
-	If Counter >=90 Then
-		msgbox("Something is broken, the project health override window hasn't opened.")
-		Reporter.ReportEvent micFail, "Click the Approved button", "The Expected Finish Period didn't display within " & Counter & " attempts."
-		Exit Do
-	End If
-Loop Until AIUtil("text_box", "Expected Finish Period").Exist(5)
+Set ClickStatement = AIUtil.FindText("Approved", micFromLeft, 1)
+Set SuccessStatement = AIUtil("text_box", "Expected Finish Period")
+ClickLoop AppContext, ClickStatement, SuccessStatement
 
 '===========================================================================================
 'BP:  Enter the Expected Start Period as June 2021
@@ -222,34 +209,16 @@ AIUtil("text_box", "Expected Finish Period").Type "December " & (Year(Now)+1)
 '===========================================================================================
 'BP:  Click the Continue Workflow Action button
 '===========================================================================================
-Counter = 0
-Do
-	AIUtil.FindText("Continue WorkflowAction").Click
-	AppContext.Sync																				'Wait for the browser to stop spinning
-	Counter = Counter + 1
-	wait(1)
-	If Counter >=90 Then
-		msgbox("Something is broken, the project health override window hasn't opened.")
-		Reporter.ReportEvent micFail, "Click the Approved button", "The Completed button didn't display within " & Counter & " attempts."
-		Exit Do
-	End If
-Loop Until AIUtil.FindTextBlock("Status: Detailed Business Case").Exist(5)
+Set ClickStatement = AIUtil.FindText("Continue WorkflowAction")
+Set SuccessStatement = AIUtil.FindTextBlock("Status: Detailed Business Case")
+ClickLoop AppContext, ClickStatement, SuccessStatement
 
 '===========================================================================================
 'BP:  Click the Completed button
 '===========================================================================================
-Counter = 0
-Do
-	AIUtil("button", "Completed").Click
-	AppContext.Sync																				'Wait for the browser to stop spinning
-	Counter = Counter + 1
-	wait(1)
-	If Counter >=90 Then
-		msgbox("Something is broken, the project health override window hasn't opened.")
-		Reporter.ReportEvent micFail, "Click the Approved button", "The Create button didn't display within " & Counter & " attempts."
-		Exit Do
-	End If
-Loop Until Browser("Search Requests").Page("Req More Information").WebElement("Create").Exist(5)
+Set ClickStatement = AIUtil("button", "Completed")
+Set SuccessStatement = Browser("Search Requests").Page("Req More Information").WebElement("Create")
+ClickLoop AppContext, ClickStatement, SuccessStatement
 
 '===========================================================================================
 'BP:  Click the Create button
@@ -268,39 +237,23 @@ AppContext2.Sync																				'Wait for the browser to stop spinning
 '===========================================================================================
 'BP:  Click the Select the Staffing Profile button
 '===========================================================================================
-Do
-	AIUtil("button", "Select the Staffing Profile").Click
-	AppContext2.Sync																				'Wait for the browser to stop spinning
-	Counter = Counter + 1
-	wait(1)
-	If Counter >=90 Then
-		msgbox("Something is broken, the project health override window hasn't opened.")
-		Reporter.ReportEvent micFail, "Click the Select Staffing Profile button", "The Staffing Profile: didn't display within " & Counter & " attempts."
-		Exit Do
-	End If
-Loop Until AIUtil("text_box", "Staffing Profile:").Exist(5)
+Set ClickStatement = AIUtil("button", "Select the Staffing Profile")
+Set SuccessStatement = AIUtil("text_box", "Staffing Profile:")
+ClickLoop AppContext2, ClickStatement, SuccessStatement
 
 '===========================================================================================
 'BP:  Enter "A/R Billing Upgrade" into the Staffing Profile field
 '===========================================================================================
 AIUtil("text_box", "Staffing Profile:").Type "A/R Billing Upgrade"
-Do
-	AIUtil.FindText("Staffing Profile:", micFromBottom, 1).Click
-	AppContext2.Sync																				'Wait for the browser to stop spinning
-	Counter = Counter + 1
-	wait(1)
-	If Counter >=90 Then
-		msgbox("Something is broken, the project health override window hasn't opened.")
-		Reporter.ReportEvent micFail, "Click the Select Staffing Profile: button", "The Import button didn't display within " & Counter & " attempts."
-		Exit Do
-	End If
-Loop Until Browser("Create a Blank Staffing").Page("Staffing Profile").Frame("copyPositionsDialogIF").Link("Import").Exist(5)
+Set ClickStatement = AIUtil.FindText("Staffing Profile:", micFromBottom, 1)
+Set SuccessStatement = Browser("Create a Blank Staffing").Page("Staffing Profile").Frame("copyPositionsDialogIF").Link("Import")
+ClickLoop AppContext2, ClickStatement, SuccessStatement
 
 '===========================================================================================
 'BP:  Click the Import button
 '===========================================================================================
 Browser("Create a Blank Staffing").Page("Staffing Profile").Frame("copyPositionsDialogIF").Link("Import").Click
-AppContext.Sync																				'Wait for the browser to stop spinning
+AppContext2.Sync																				'Wait for the browser to stop spinning
 
 '===========================================================================================
 'BP:  Click the Done text
