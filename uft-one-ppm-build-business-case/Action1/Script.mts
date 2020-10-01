@@ -16,7 +16,7 @@
 '				the continue action when PPM finally completed the last attempt
 '20200930 - DJ: Updated the click out of the Request Type to just click on the label for the status to ensure that PPM page 
 '				reload timing won't sporadically cause the AI to type in the wrong field.
-'20200930 - DJ: Made the ClickLoop function, replaced duplicative code throughout with references to ClickLoop, made the
+'20201001 - DJ: Made the ClickLoop function, replaced duplicative code throughout with references to ClickLoop, made the
 '				proposal search as a function, so as to allow easy sharing with other scripts.
 '===========================================================
 
