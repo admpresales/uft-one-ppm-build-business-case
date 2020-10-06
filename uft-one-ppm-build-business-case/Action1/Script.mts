@@ -19,6 +19,7 @@
 '20201001 - DJ: Made the ClickLoop function, replaced duplicative code throughout with references to ClickLoop, made the
 '				proposal search as a function, so as to allow easy sharing with other scripts.
 '20201006 - DJ: Changed the comboboxes to be traditional OR, had an issue with someone's odd resolution
+'20201006 - DJ: Updated PPMProposalSearch function to look for the text Saved Searches to know Search click worked and commented .sync after that to prevent PPM from auto closing the menu popup
 '===========================================================
 
 
@@ -66,9 +67,9 @@ Function PPMProposalSearch (CurrentStatus, NextAction)
 	'BP:  Click the Search menu item
 	'===========================================================================================
 	Set ClickStatement = AIUtil.FindText("SEARCH", micFromTop, 1)
-	Set SuccessStatement = AIUtil.FindTextBlock("Requests", micFromTop, 1)
+	Set SuccessStatement = AIUtil.FindText("Saved Searches")
 	ClickLoop AppContext, ClickStatement, SuccessStatement
-	AppContext.Sync																				'Wait for the browser to stop spinning
+	'AppContext.Sync																				'Wait for the browser to stop spinning
 	
 	'===========================================================================================
 	'BP:  Click the Requests text
