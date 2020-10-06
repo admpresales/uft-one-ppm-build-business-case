@@ -22,6 +22,7 @@
 '20201006 - DJ: Updated PPMProposalSearch function to look for the text Saved Searches to know Search click worked and commented .sync after that to prevent PPM from auto closing the menu popup
 '20201006 - DJ: Removed unused function
 '				Added function comments
+'20201006 - DJ: Updated Expected next step for clicking completed to use an AI statement instead of a traditional OR statement
 '===========================================================
 
 
@@ -210,7 +211,7 @@ ClickLoop AppContext, ClickStatement, SuccessStatement
 'BP:  Click the Completed button
 '===========================================================================================
 Set ClickStatement = AIUtil("button", "Completed")
-Set SuccessStatement = Browser("Search Requests").Page("Req More Information").WebElement("Create")
+Set SuccessStatement = AIUtil.FindTextBlock("Staffing Profile")
 ClickLoop AppContext, ClickStatement, SuccessStatement
 
 '===========================================================================================
