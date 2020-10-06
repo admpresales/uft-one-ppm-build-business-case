@@ -18,6 +18,7 @@
 '				reload timing won't sporadically cause the AI to type in the wrong field.
 '20201001 - DJ: Made the ClickLoop function, replaced duplicative code throughout with references to ClickLoop, made the
 '				proposal search as a function, so as to allow easy sharing with other scripts.
+'20201001 - DJ: Changed the comboboxes to be traditional OR, had an issue with someone's odd resolution
 '===========================================================
 
 
@@ -175,12 +176,14 @@ ClickLoop AppContext, ClickStatement, SuccessStatement
 '===========================================================================================
 'BP:  Select "Innovation" in the Project Class
 '===========================================================================================
-AIUtil("combobox", "Project Class").Select "Innovation"
+'AIUtil("combobox", "Project Class").Select "Innovation"
+Browser("Search Requests").Page("Req More Information").WebList("Project Class").Select "Innovation"
 
 '===========================================================================================
 'BP:  Select "Infrastructure" in the Asset Class
 '===========================================================================================
-AIUtil("combobox", ":Asset Class").Select "Infrastructure"
+'AIUtil("combobox", ":Asset Class").Select "Infrastructure"
+Browser("Search Requests").Page("Req More Information").WebList("Asset Class").Select "Infrastructure"
 
 '===========================================================================================
 'BP:  Click the Continue Workflow Action button
