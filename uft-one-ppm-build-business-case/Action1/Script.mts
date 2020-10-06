@@ -20,28 +20,14 @@
 '				proposal search as a function, so as to allow easy sharing with other scripts.
 '20201006 - DJ: Changed the comboboxes to be traditional OR, had an issue with someone's odd resolution
 '20201006 - DJ: Updated PPMProposalSearch function to look for the text Saved Searches to know Search click worked and commented .sync after that to prevent PPM from auto closing the menu popup
+'20201006 - DJ: Removed unused function
+'				Added function comments
 '===========================================================
 
 
 '===========================================================
-'Function to Create a Random Number with DateTime Stamp
+'Function to retry action if next step doesn't show up
 '===========================================================
-Function fnRandomNumberWithDateTimeStamp()
-
-'Find out the current date and time
-Dim sDate : sDate = Day(Now)
-Dim sMonth : sMonth = Month(Now)
-Dim sYear : sYear = Year(Now)
-Dim sHour : sHour = Hour(Now)
-Dim sMinute : sMinute = Minute(Now)
-Dim sSecond : sSecond = Second(Now)
-
-'Create Random Number
-fnRandomNumberWithDateTimeStamp = Int(sDate & sMonth & sYear & sHour & sMinute & sSecond)
-
-'======================== End Function =====================
-End Function
-
 Function ClickLoop (AppContext, ClickStatement, SuccessStatement)
 	
 	Dim Counter
@@ -62,6 +48,9 @@ Function ClickLoop (AppContext, ClickStatement, SuccessStatement)
 
 End Function
 
+'===========================================================
+'Function to search for the PPM proposal in the appropriate status
+'===========================================================
 Function PPMProposalSearch (CurrentStatus, NextAction)
 	'===========================================================================================
 	'BP:  Click the Search menu item
