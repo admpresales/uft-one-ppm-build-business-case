@@ -18,7 +18,7 @@
 '				reload timing won't sporadically cause the AI to type in the wrong field.
 '20201001 - DJ: Made the ClickLoop function, replaced duplicative code throughout with references to ClickLoop, made the
 '				proposal search as a function, so as to allow easy sharing with other scripts.
-'20201001 - DJ: Changed the comboboxes to be traditional OR, had an issue with someone's odd resolution
+'20201006 - DJ: Changed the comboboxes to be traditional OR, had an issue with someone's odd resolution
 '===========================================================
 
 
@@ -128,7 +128,7 @@ AppContext.Sync																				'Wait for the browser to stop spinning
 AIUtil.SetContext AppContext																'Tell the AI engine to point at the application
 
 '===========================================================================================
-'BP:  Click the Executive Overview link
+'BP:  Click the Strategic Portfolio link
 '===========================================================================================
 AIUtil.FindText("Strategic Portfolio").Click
 AppContext.Sync																				'Wait for the browser to stop spinning
