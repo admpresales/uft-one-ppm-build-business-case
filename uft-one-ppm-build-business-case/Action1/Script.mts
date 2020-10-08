@@ -23,6 +23,7 @@
 '20201006 - DJ: Removed unused function
 '				Added function comments
 '20201006 - DJ: Updated Expected next step for clicking completed to use an AI statement instead of a traditional OR statement
+'20201008 - DJ: Found another example where the PPM application sometimes locks up, click statement with CLickLoop call
 '===========================================================
 
 
@@ -217,7 +218,9 @@ ClickLoop AppContext, ClickStatement, SuccessStatement
 '===========================================================================================
 'BP:  Click the Create button
 '===========================================================================================
-Browser("Search Requests").Page("Req More Information").WebElement("Create").Click
+Set ClickStatement = Browser("Search Requests").Page("Req More Information").WebElement("Create")
+Set SuccessStatement = Browser("Create a Blank Staffing").Page("Create a Blank Staffing").WebButton("button.create")
+ClickLoop AppContext, ClickStatement, SuccessStatement
 AppContext2.Maximize																			'Maximize the application to give the best chance that the fields will be visible on the screen
 AppContext2.Sync																				'Wait for the browser to stop spinning
 AIUtil.SetContext AppContext2																'Tell the AI engine to point at the application
