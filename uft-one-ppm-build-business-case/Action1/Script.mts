@@ -24,6 +24,7 @@
 '				Added function comments
 '20201006 - DJ: Updated Expected next step for clicking completed to use an AI statement instead of a traditional OR statement
 '20201008 - DJ: Found another example where the PPM application sometimes locks up, click statement with CLickLoop call
+'20201012 - DJ: Found another example where the PPM application sometimes locks up, during a .type command, added logic to try again
 '===========================================================
 
 
@@ -241,7 +242,19 @@ ClickLoop AppContext2, ClickStatement, SuccessStatement
 '===========================================================================================
 'BP:  Enter "A/R Billing Upgrade" into the Staffing Profile field
 '===========================================================================================
-AIUtil("text_box", "Staffing Profile:").Type "A/R Billing Upgrade"
+Counter = 0
+Do
+	AIUtil("text_box", "Staffing Profile:").Type "A/R Billing Upgrade"
+	AppContext2.Sync																				'Wait for the browser to stop spinning
+	Counter = Counter + 1
+	wait(1)
+	If Counter >=3 Then
+		msgbox("Something is broken, the Billing Upgrade text hasn't shown up")
+		Reporter.ReportEvent micFail, "Type the Staffing Profile", "The Billing Upgrade text didn't display within " & Counter & " attempts."
+		Exit Do
+	End If
+Loop Until AIUtil.FindText("Billing Upgrade").Exist(1)
+'AIUtil("text_box", "Staffing Profile:").Type "A/R Billing Upgrade"
 Set ClickStatement = AIUtil.FindText("Staffing Profile:", micFromBottom, 1)
 Set SuccessStatement = Browser("Create a Blank Staffing").Page("Staffing Profile").Frame("copyPositionsDialogIF").Link("Import")
 ClickLoop AppContext2, ClickStatement, SuccessStatement
