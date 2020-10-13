@@ -25,6 +25,7 @@
 '20201006 - DJ: Updated Expected next step for clicking completed to use an AI statement instead of a traditional OR statement
 '20201008 - DJ: Found another example where the PPM application sometimes locks up, click statement with CLickLoop call
 '20201012 - DJ: Found another example where the PPM application sometimes locks up, during a .type command, added logic to try again
+'20201013 - DJ: Modified the ClickLoop retry counter to be 3 instead of 90
 '===========================================================
 
 
@@ -41,7 +42,7 @@ Function ClickLoop (AppContext, ClickStatement, SuccessStatement)
 		AppContext.Sync																				'Wait for the browser to stop spinning
 		Counter = Counter + 1
 		wait(1)
-		If Counter >=90 Then
+		If Counter >=3 Then
 			msgbox("Something is broken, the Requests hasn't shown up")
 			Reporter.ReportEvent micFail, "Click the Search text", "The Requests text didn't display within " & Counter & " attempts."
 			Exit Do
