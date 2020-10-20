@@ -26,6 +26,7 @@
 '20201008 - DJ: Found another example where the PPM application sometimes locks up, click statement with CLickLoop call
 '20201012 - DJ: Found another example where the PPM application sometimes locks up, during a .type command, added logic to try again
 '20201013 - DJ: Modified the ClickLoop retry counter to be 3 instead of 90
+'20201020 - DJ: Updated to handle changes coming in UFT One 15.0.2
 '===========================================================
 
 
@@ -47,7 +48,7 @@ Function ClickLoop (AppContext, ClickStatement, SuccessStatement)
 			Reporter.ReportEvent micFail, "Click the Search text", "The Requests text didn't display within " & Counter & " attempts."
 			Exit Do
 		End If
-	Loop Until SuccessStatement.Exist(1)
+	Loop Until SuccessStatement.Exist(10)
 	AppContext.Sync																				'Wait for the browser to stop spinning
 
 End Function
@@ -101,7 +102,7 @@ Function PPMProposalSearch (CurrentStatus, NextAction)
 	
 End Function
 
-Dim BrowserExecutable, Counter
+Dim BrowserExecutable, Counter, rc
 
 While Browser("CreationTime:=0").Exist(0)   												'Loop to close all open browsers
 	Browser("CreationTime:=0").Close 
@@ -132,7 +133,7 @@ AppContext.Sync																				'Wait for the browser to stop spinning
 '===========================================================================================
 AIUtil.FindTextBlock("Barabara Getty").Click
 AppContext.Sync																				'Wait for the browser to stop spinning
-AIUtil.FindTextBlock("New Proposals").Exist
+rc = AIUtil.FindTextBlock("New Proposals").Exist
 AppContext.Sync																				'Wait for the browser to stop spinning
 
 PPMProposalSearch "New", "Approved"
