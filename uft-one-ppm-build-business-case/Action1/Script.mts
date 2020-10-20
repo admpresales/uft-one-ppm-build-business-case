@@ -27,6 +27,7 @@
 '20201012 - DJ: Found another example where the PPM application sometimes locks up, during a .type command, added logic to try again
 '20201013 - DJ: Modified the ClickLoop retry counter to be 3 instead of 90
 '20201020 - DJ: Updated to handle changes coming in UFT One 15.0.2
+'				Commented out the msgbox, which can cause UFT One to be in a locked state when executed from Jenkins
 '===========================================================
 
 
@@ -44,7 +45,7 @@ Function ClickLoop (AppContext, ClickStatement, SuccessStatement)
 		Counter = Counter + 1
 		wait(1)
 		If Counter >=3 Then
-			msgbox("Something is broken, the Requests hasn't shown up")
+			'msgbox("Something is broken, the Requests hasn't shown up")
 			Reporter.ReportEvent micFail, "Click the Search text", "The Requests text didn't display within " & Counter & " attempts."
 			Exit Do
 		End If
