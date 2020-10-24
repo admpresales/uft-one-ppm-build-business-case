@@ -31,6 +31,7 @@
 '20201022 - DJ: Updated ClickLoop to gracefully abort if failure number reached
 '				Commented out remaining msgbox commands
 '				Added re-initialization of Counter before a loop that was missing (missed logic step)
+'20201024 - DJ: Added a timeout on the Exist for making sure that the Done button is clicked.
 '===========================================================
 
 
@@ -287,7 +288,7 @@ AppContext2.Sync																				'Wait for the browser to stop spinning
 '===========================================================================================
 Do
 	AIUtil.FindText("Done").Click
-Loop While AIUtil.FindText("Done").Exist
+Loop While AIUtil.FindText("Done").Exist(1)
 AIUtil.SetContext AppContext																'Tell the AI engine to point at the application
 
 '===========================================================================================
