@@ -255,34 +255,8 @@ AppContext2.Sync																				'Wait for the browser to stop spinning
 'BP:  Click the Select the Staffing Profile button
 '===========================================================================================
 Set ClickStatement = AIUtil("button", "Select the Staffing Profile")
-Set SuccessStatement = AIUtil("text_box", "Staffing Profile:")
-Set SuccessStatement2 = AIUtil("text_box", "Import positions from existing Staffing Profiles")
-
-Counter = 0
-Do
-	ClickStatement.Click
-	AppContext.Sync																				'Wait for the browser to stop spinning
-	Counter = Counter + 1
-	wait(1)
-	If Counter >=3 Then
-		'msgbox("Something is broken, the Requests hasn't shown up")
-		Reporter.ReportEvent micFail, "Click Statement", "The Success Statement didn't display within " & Counter & " attempts.  Aborting run"
-		'===========================================================================================
-		'BP:  Logout
-		'===========================================================================================
-		AIUtil.SetContext AppContext																'Tell the AI engine to point at the application
-		Browser("Search Requests").Page("Req Details").WebElement("menuUserIcon").Click
-		AppContext.Sync																				'Wait for the browser to stop spinning
-		AIUtil.FindText("Sign Out").Click
-		AppContext.Sync																				'Wait for the browser to stop spinning
-		While Browser("CreationTime:=0").Exist(0)   												'Loop to close all open browsers
-			Browser("CreationTime:=0").Close 
-		Wend
-		ExitAction
-	End If
-Loop Until (SuccessStatement2.Exist(10) or SuccessStatement.Exist(10))
-AppContext2.Sync																				'Wait for the browser to stop spinning
-
+Set SuccessStatement = AIUtil.FindText("Import positions from existing Staffing Profiles", micFromTop, 1)
+ClickLoop AppContext, ClickStatement, SuccessStatement
 
 '===========================================================================================
 'BP:  Enter "A/R Billing Upgrade" into the Staffing Profile field
