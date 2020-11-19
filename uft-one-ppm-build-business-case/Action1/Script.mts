@@ -32,6 +32,7 @@
 '				Commented out remaining msgbox commands
 '				Added re-initialization of Counter before a loop that was missing (missed logic step)
 '20201024 - DJ: Added a timeout on the Exist for making sure that the Done button is clicked.
+'20201119 - DJ: Updated to handle 15.0.2 changes.  Script should still work on 15.0.1 as well.
 '===========================================================
 
 
@@ -57,7 +58,7 @@ Function ClickLoop (AppContext, ClickStatement, SuccessStatement)
 			AIUtil.SetContext AppContext																'Tell the AI engine to point at the application
 			Browser("Search Requests").Page("Req Details").WebElement("menuUserIcon").Click
 			AppContext.Sync																				'Wait for the browser to stop spinning
-			AIUtil.FindText("Sign Out (").Click
+			AIUtil.FindText("Sign Out").Click
 			AppContext.Sync																				'Wait for the browser to stop spinning
 			While Browser("CreationTime:=0").Exist(0)   												'Loop to close all open browsers
 				Browser("CreationTime:=0").Close 
@@ -255,14 +256,44 @@ AppContext2.Sync																				'Wait for the browser to stop spinning
 '===========================================================================================
 Set ClickStatement = AIUtil("button", "Select the Staffing Profile")
 Set SuccessStatement = AIUtil("text_box", "Staffing Profile:")
-ClickLoop AppContext2, ClickStatement, SuccessStatement
+Set SuccessStatement2 = AIUtil("text_box", "Import positions from existing Staffing Profiles")
+
+Counter = 0
+Do
+	ClickStatement.Click
+	AppContext.Sync																				'Wait for the browser to stop spinning
+	Counter = Counter + 1
+	wait(1)
+	If Counter >=3 Then
+		'msgbox("Something is broken, the Requests hasn't shown up")
+		Reporter.ReportEvent micFail, "Click Statement", "The Success Statement didn't display within " & Counter & " attempts.  Aborting run"
+		'===========================================================================================
+		'BP:  Logout
+		'===========================================================================================
+		AIUtil.SetContext AppContext																'Tell the AI engine to point at the application
+		Browser("Search Requests").Page("Req Details").WebElement("menuUserIcon").Click
+		AppContext.Sync																				'Wait for the browser to stop spinning
+		AIUtil.FindText("Sign Out").Click
+		AppContext.Sync																				'Wait for the browser to stop spinning
+		While Browser("CreationTime:=0").Exist(0)   												'Loop to close all open browsers
+			Browser("CreationTime:=0").Close 
+		Wend
+		ExitAction
+	End If
+Loop Until (SuccessStatement2.Exist(10) or SuccessStatement.Exist(10))
+AppContext2.Sync																				'Wait for the browser to stop spinning
+
 
 '===========================================================================================
 'BP:  Enter "A/R Billing Upgrade" into the Staffing Profile field
 '===========================================================================================
 Counter = 0
 Do
-	AIUtil("text_box", "Staffing Profile:").Type "A/R Billing Upgrade"
+	If AIUtil("text_box", "Import positions from existing Staffing Profiles").Exist Then
+		AIUtil("text_box", "Import positions from existing Staffing Profiles").Type  "A/R Billing Upgrade"
+	Else
+		AIUtil("text_box", "Staffing Profile:").Type "A/R Billing Upgrade"
+	End If
 	AppContext2.Sync																				'Wait for the browser to stop spinning
 	Counter = Counter + 1
 	wait(1)
