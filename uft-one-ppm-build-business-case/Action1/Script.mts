@@ -33,6 +33,8 @@
 '				Added re-initialization of Counter before a loop that was missing (missed logic step)
 '20201024 - DJ: Added a timeout on the Exist for making sure that the Done button is clicked.
 '20201119 - DJ: Updated to handle 15.0.2 changes.  Script should still work on 15.0.1 as well.
+'20201203 - DJ: Updated as the "Create" button click for bringing up the create/associate staffing profile pop-up sometimes wasn't properly occurring.  Starting in
+'				15.0.2, the button is now recognized properly with AI.  The 15.0.1 code is just commented out if someone needs to run on 15.0.1.
 '===========================================================
 
 
@@ -238,8 +240,10 @@ ClickLoop AppContext, ClickStatement, SuccessStatement
 '===========================================================================================
 'BP:  Click the Create button
 '===========================================================================================
-Set ClickStatement = Browser("Search Requests").Page("Req More Information").WebElement("Create")
-Set SuccessStatement = Browser("Create a Blank Staffing").Page("Create a Blank Staffing").WebButton("button.create")
+'Set ClickStatement = Browser("Search Requests").Page("Req More Information").WebElement("Create")
+Set ClickStatement = AIUtil("button", "Create")
+'Set SuccessStatement = Browser("Create a Blank Staffing").Page("Create a Blank Staffing").WebButton("button.create")
+Set SuccessStatement = AppContext2
 ClickLoop AppContext, ClickStatement, SuccessStatement
 AppContext2.Maximize																			'Maximize the application to give the best chance that the fields will be visible on the screen
 AppContext2.Sync																				'Wait for the browser to stop spinning
