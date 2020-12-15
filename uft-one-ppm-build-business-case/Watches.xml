@@ -1,1 +1,3 @@
-﻿<Properties />
+﻿<Properties>
+  <WatchEntry0 value="ClickStatement = AIUtil(&quot;button&quot;, micAnyText,micFromTop, 1).Highlight" />
+</Properties>

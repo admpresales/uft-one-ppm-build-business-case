@@ -35,6 +35,7 @@
 '20201119 - DJ: Updated to handle 15.0.2 changes.  Script should still work on 15.0.1 as well.
 '20201203 - DJ: Updated as the "Create" button click for bringing up the create/associate staffing profile pop-up sometimes wasn't properly occurring.  Starting in
 '				15.0.2, the button is now recognized properly with AI.  The 15.0.1 code is just commented out if someone needs to run on 15.0.1.
+'20201215 - DJ: The OCR isn't recognizing the "Create" text on the button if the resolution of the machine isn't large.  Changed to use first button on screen.
 '===========================================================
 
 
@@ -241,7 +242,8 @@ ClickLoop AppContext, ClickStatement, SuccessStatement
 'BP:  Click the Create button
 '===========================================================================================
 'Set ClickStatement = Browser("Search Requests").Page("Req More Information").WebElement("Create")
-Set ClickStatement = AIUtil("button", "Create")
+'Set ClickStatement = AIUtil("button", "Create")													'If the resolution is too low, the OCR can't see the text on the screen
+Set ClickStatement = AIUtil("button", micAnyText, micFromTop, 1)								'Click the first button on the screen (which is the Create button
 'Set SuccessStatement = Browser("Create a Blank Staffing").Page("Create a Blank Staffing").WebButton("button.create")
 Set SuccessStatement = AppContext2
 ClickLoop AppContext, ClickStatement, SuccessStatement
