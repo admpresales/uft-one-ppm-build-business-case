@@ -36,6 +36,7 @@
 '20201203 - DJ: Updated as the "Create" button click for bringing up the create/associate staffing profile pop-up sometimes wasn't properly occurring.  Starting in
 '				15.0.2, the button is now recognized properly with AI.  The 15.0.1 code is just commented out if someone needs to run on 15.0.1.
 '20201215 - DJ: The OCR isn't recognizing the "Create" text on the button if the resolution of the machine isn't large.  Changed to use first button on screen.
+'20210107 - DJ: Update the Staffing Profile object idenfication to utilize VRI as different resolutions see different text being auto associated to that field
 '===========================================================
 
 
@@ -241,10 +242,7 @@ ClickLoop AppContext, ClickStatement, SuccessStatement
 '===========================================================================================
 'BP:  Click the Create button
 '===========================================================================================
-'Set ClickStatement = Browser("Search Requests").Page("Req More Information").WebElement("Create")
-'Set ClickStatement = AIUtil("button", "Create")													'If the resolution is too low, the OCR can't see the text on the screen
 Set ClickStatement = AIUtil("button", micAnyText, micFromTop, 1)								'Click the first button on the screen (which is the Create button
-'Set SuccessStatement = Browser("Create a Blank Staffing").Page("Create a Blank Staffing").WebButton("button.create")
 Set SuccessStatement = AppContext2
 ClickLoop AppContext, ClickStatement, SuccessStatement
 AppContext2.Maximize																			'Maximize the application to give the best chance that the fields will be visible on the screen
@@ -269,11 +267,8 @@ ClickLoop AppContext, ClickStatement, SuccessStatement
 '===========================================================================================
 Counter = 0
 Do
-	If AIUtil("text_box", "Import positions from existing Staffing Profiles").Exist Then
-		AIUtil("text_box", "Import positions from existing Staffing Profiles").Type  "A/R Billing Upgrade"
-	Else
-		AIUtil("text_box", "Staffing Profile:").Type "A/R Billing Upgrade"
-	End If
+	AIUtil.SetContext AppContext2																'Tell the AI engine to point at the application
+	AIUtil("text_box", micAnyText, micWithAnchorOnLeft, AIUtil.FindTextBlock("Staffing Profile:")).Type "A/R Billing Upgrade"
 	AppContext2.Sync																				'Wait for the browser to stop spinning
 	Counter = Counter + 1
 	wait(1)
@@ -283,7 +278,6 @@ Do
 		Exit Do
 	End If
 Loop Until AIUtil.FindText("Billing Upgrade").Exist(1)
-'AIUtil("text_box", "Staffing Profile:").Type "A/R Billing Upgrade"
 Set ClickStatement = AIUtil.FindText("Staffing Profile:", micFromBottom, 1)
 Set SuccessStatement = Browser("Create a Blank Staffing").Page("Staffing Profile").Frame("copyPositionsDialogIF").Link("Import")
 ClickLoop AppContext2, ClickStatement, SuccessStatement
@@ -331,4 +325,5 @@ AIUtil.FindTextBlock("Sign Out (Barbara Getty)").Click
 AppContext.Sync																				'Wait for the browser to stop spinning
 
 AppContext.Close																			'Close the application at the end of your script
+
 

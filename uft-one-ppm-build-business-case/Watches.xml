@@ -1,3 +1,6 @@
 ﻿<Properties>
-  <WatchEntry0 value="ClickStatement = AIUtil(&quot;button&quot;, micAnyText,micFromTop, 1).Highlight" />
+  <WatchEntry0 value=" AIUtil(&quot;text_box&quot;, micAnyText, micWithAnchorOnLeft, TextAnchor).Highlight" />
+  <WatchEntry1 value=" AIUtil(&quot;text_box&quot;, micAnyText, micWithAnchorOnLeft, TextAnchor).Exist" />
+  <WatchEntry2 value=" AIUtil(&quot;text_box&quot;, micAnyText, micWithAnchorOnLeft, TextAnchor).Type &quot;A/R Billing Upgrade&quot;" />
+  <WatchEntry3 value="AIUtil(&quot;text_box&quot;, &quot;Import positions from existing Staffing Profiles&quot;, micWithAnchorOnLeft, AIUtil.FindTextBlock(&quot;Staffing Profile:&quot;)).Type &quot;A/R Billing Upgrade&quot;" />
 </Properties>
