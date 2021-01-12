@@ -37,6 +37,7 @@
 '				15.0.2, the button is now recognized properly with AI.  The 15.0.1 code is just commented out if someone needs to run on 15.0.1.
 '20201215 - DJ: The OCR isn't recognizing the "Create" text on the button if the resolution of the machine isn't large.  Changed to use first button on screen.
 '20210107 - DJ: Update the Staffing Profile object idenfication to utilize VRI as different resolutions see different text being auto associated to that field
+'20210112 - DJ: Updated to take advantage of additional capabilities in 15.0.2 around object recognition.  This will no longer properly run on 15.0.1.
 '===========================================================
 
 
@@ -109,7 +110,8 @@ Function PPMProposalSearch (CurrentStatus, NextAction)
 	'===========================================================================================
 	'BP:  Click the Search button (OCR not seeing text, use traditional OR)
 	'===========================================================================================
-	Browser("Search Requests").Page("Search Requests").Link("Search").Click
+	AIUtil("button", "Search").Click
+	'Browser("Search Requests").Page("Search Requests").Link("Search").Click
 	AppContext.Sync																				'Wait for the browser to stop spinning
 	
 	'===========================================================================================
@@ -163,7 +165,9 @@ PPMProposalSearch "New", "Approved"
 'BP:  Click the Approved button
 '===========================================================================================
 Set ClickStatement = AIUtil.FindText("Approved")
-Set SuccessStatement = Browser("Search Requests").Page("Req More Information").WebElement("Continue Workflow Action")
+'AIUtil("button", "Continue Workflow Action").Click
+'Set SuccessStatement = Browser("Search Requests").Page("Req More Information").WebElement("Continue Workflow Action")
+Set SuccessStatement = AIUtil("button", "Continue Workflow Action")
 ClickLoop AppContext, ClickStatement, SuccessStatement
 
 '===========================================================================================
@@ -172,7 +176,7 @@ ClickLoop AppContext, ClickStatement, SuccessStatement
 'When executing from Jenkins, the AI statement is failing the first time, 2nd time it runs, while 
 '	investigating, replace with traditional OR step
 '	AIUtil.FindText("Continue WorkflowAction").Click
-Set ClickStatement = Browser("Search Requests").Page("Req More Information").WebElement("Continue Workflow Action")
+Set ClickStatement = AIUtil("button", "Continue Workflow Action")
 Set SuccessStatement = AIUtil.FindTextBlock("Status: High-Level Business Case")
 ClickLoop AppContext, ClickStatement, SuccessStatement
 
@@ -252,7 +256,8 @@ AIUtil.SetContext AppContext2																'Tell the AI engine to point at the
 '===========================================================================================
 'BP:  Click the Create button in the popup window
 '===========================================================================================
-Browser("Create a Blank Staffing").Page("Create a Blank Staffing").WebButton("button.create").Click
+AIUtil("button", "Create").Click
+'Browser("Create a Blank Staffing").Page("Create a Blank Staffing").WebButton("button.create").Click
 AppContext2.Sync																				'Wait for the browser to stop spinning
 
 '===========================================================================================
@@ -285,7 +290,8 @@ ClickLoop AppContext2, ClickStatement, SuccessStatement
 '===========================================================================================
 'BP:  Click the Import button
 '===========================================================================================
-Browser("Create a Blank Staffing").Page("Staffing Profile").Frame("copyPositionsDialogIF").Link("Import").Click
+'Browser("Create a Blank Staffing").Page("Staffing Profile").Frame("copyPositionsDialogIF").Link("Import").Click
+AIUtil("button", "Import").Click
 AppContext2.Sync																				'Wait for the browser to stop spinning
 
 '===========================================================================================
