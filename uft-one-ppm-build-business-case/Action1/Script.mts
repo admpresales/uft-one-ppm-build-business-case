@@ -38,6 +38,7 @@
 '20201215 - DJ: The OCR isn't recognizing the "Create" text on the button if the resolution of the machine isn't large.  Changed to use first button on screen.
 '20210107 - DJ: Update the Staffing Profile object idenfication to utilize VRI as different resolutions see different text being auto associated to that field
 '20210112 - DJ: Updated to take advantage of additional capabilities in 15.0.2 around object recognition.  This will no longer properly run on 15.0.1.
+'20210209 - DJ: Updated to start the mediaserver service on the UFT One host machine if it isn't running
 '===========================================================
 
 
@@ -125,7 +126,11 @@ Function PPMProposalSearch (CurrentStatus, NextAction)
 	
 End Function
 
-Dim BrowserExecutable, Counter, rc
+Dim BrowserExecutable, Counter, rc, oShell
+
+Set oShell = CreateObject ("WSCript.shell")
+oShell.run "powershell -command ""Start-Service mediaserver"""
+Set oShell = Nothing
 
 While Browser("CreationTime:=0").Exist(0)   												'Loop to close all open browsers
 	Browser("CreationTime:=0").Close 
